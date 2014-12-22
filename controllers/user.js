@@ -6,7 +6,7 @@
 /*
 * -------------   BEFORE SAVE
 */
-Parse.Cloud.beforeSave("User", function(request, response) {
+Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
   var comments = request.object.get("comments");
   if(comments == null || comments < 0)
@@ -28,6 +28,32 @@ Parse.Cloud.beforeSave("User", function(request, response) {
 /*
 * -------------   AFTER SAVE
 */
+Parse.Cloud.afterSave(Parse.User, function(request, response) {
+  
+  //send email
+  if(!request.object.existed())  {
+
+    var Mailgun = require('mailgun');
+    Mailgun.initialize('xxx', 'xxx');
+
+    Mailgun.sendEmail({
+      to: "xxx",
+      from: "noreply@giacomocavicchioli.com",
+      subject: "New user just signup!",
+      text: "A new user just signed up with username: " + request.user.get("username") + " and email: " + request.user.get("email")
+    }, {
+      success: function(httpResponse) {
+        console.log("Email just sent!");
+        console.log(httpResponse);
+      },
+      error: function(httpResponse) {
+        console.log("Error sending email.");
+        console.error(httpResponse);
+      }
+    });
+  }
+}); 
+
 
 /*
 * -------------   BEFORE DELETE
@@ -36,7 +62,7 @@ Parse.Cloud.beforeSave("User", function(request, response) {
 /*
 * -------------   AFTER DELETE
 */
-Parse.Cloud.afterDelete("User", function(request) {
+Parse.Cloud.afterDelete(Parse.User, function(request) {
   query = new Parse.Query("Comment");
   query.equalTo("createdBy", request.object.id);
   query.find({
