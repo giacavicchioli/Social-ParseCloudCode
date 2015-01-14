@@ -81,14 +81,11 @@ Parse.Cloud.afterDelete("Comment", function(request) {
   });
   
   //decrement the User's comments
-  console.log("The user who submitted the comment has the id: " + request.object.get("createdBy").id);
+  Parse.Cloud.useMasterKey();
   query = new Parse.Query(Parse.User);
   query.get(request.object.get("createdBy").id, {
     success: function(user) {
       
-      console.log("Retrieved the user.");
-      console.log("He has username: " + user.get("username"));
-
       user.increment("comments", -1);
       user.save();
       
