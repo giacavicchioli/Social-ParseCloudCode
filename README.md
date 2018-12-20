@@ -1,7 +1,7 @@
 Social-ParseCloudCode
 =====================
 
-A simple backened for a simple social app using [parse.com](www.parse.com).
+A simple backened for a simple social app using [parse.com](http://www.parse.com).
 
 # Table structure
 Here the structure of the parse tables.
